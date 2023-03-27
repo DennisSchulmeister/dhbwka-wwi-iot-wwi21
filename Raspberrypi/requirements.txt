@@ -1,2 +1,15 @@
+# gpiozero-Bibliothek für einfache Hardwarezugriffe
 gpiozero
+
+# Für geneuere Ansteuerung der GPIOs. Benötigt allerdings die Installtion
+# weiterer Pakete unter Raspbian Linux. Hierfür bitte folgende Befehle
+# ausführen:
+#
+#   sudo apt update
+#   sudo apt install pigpiod pigpio-tools
+#   sudo systemctl enable pigpiod
+#   sudo systemctl start pigpiod
+pigpio
+
+# MQTT-Client
 paho-mqtt
