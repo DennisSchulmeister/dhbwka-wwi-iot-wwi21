@@ -1,3 +1,5 @@
+# Vgl. https://pypi.org/project/paho-mqtt/
+
 import paho.mqtt.client as mqtt
 import dataclasses, json, logging, ssl
 
@@ -27,8 +29,9 @@ class MQTTHandler:
         self._connected = False
 
         self._mqtt = mqtt.Client()
-        self._mqtt.on_connect = self._on_connect
+        self._mqtt.on_connect    = self._on_connect
         self._mqtt.on_disconnect = self._on_disconnect
+        self._mqtt.on_message    = self._on_message
 
         logging.info(f"Stelle Verbindung zum MQTT-Server her: {config['host']}, Port {config['port']}")
         self._mqtt.connect(host=config["host"], port=int(config["port"]), keepalive=int(config["keepalive"]))
@@ -41,6 +44,8 @@ class MQTTHandler:
         if config.get("username", "") or config.get("password", ""):
             logging.info(f"Führe Anmeldung am MQTT-Server durch mit Benutzername {config.get('username', '')}")
             self._mqtt.username_pw_set(username=config["username"], password=config["password"])
+        
+        self._mqtt.loop_start()
 
     def _on_connect(self, client, userdata, flags, rc):
         """
@@ -65,8 +70,8 @@ class MQTTHandler:
 
         if rc == 0:
             self._connected = True
-            self._mqtt.subscribe([self._config["topic_receive"], 0])
-            self._mqtt.message_callback_add(self._config["topic_receive"], self._on_receive_backend_data)
+            logging.info(f"Aboniere MQTT-Topic {self._config['topic_receive']}")
+            self._mqtt.subscribe(self._config["topic_receive"])
         else:
             self._connected = False
     
@@ -79,7 +84,7 @@ class MQTTHandler:
         """
         self._connected = False
     
-    def _on_receive_backend_data(self, client, userdata, message):
+    def _on_message(self, client, userdata, message):
         """
         Wertet ein über MQTT empfangenes Kommando zur Fernsteuerung des Devices aus
         und führt die jeweilige Aktion direkt aus.
@@ -92,10 +97,11 @@ class MQTTHandler:
         command = payload.get("command", "").upper()
 
         if command == "ALARM_ON":
-            this._device.parameters["alarm"] = True
-            this._device.parameters["silent"] = False
+            self._device.parameters["alarm"] = True
+            self._device.parameters["silent"] = False
         elif command == "ALARM_OFF":
-            this._device.parameters["alarm"] = False
+            self._device.parameters["alarm"] = False
+            self._device.parameters["silent"] = False
 
     def __call__(self, device):
         """

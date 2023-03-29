@@ -11,5 +11,5 @@ gpiozero
 #   sudo systemctl start pigpiod
 pigpio
 
-# MQTT-Client
+# MQTT-Client, siehe https://pypi.org/project/paho-mqtt/
 paho-mqtt

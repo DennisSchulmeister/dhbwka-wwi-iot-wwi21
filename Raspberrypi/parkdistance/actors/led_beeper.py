@@ -46,30 +46,48 @@ class LedBeeper:
             intensity = 1
         
         self._intensity = intensity
+        self.silent = False
+        self.alarm = False
 
     def _blink_thread_main(self):
         """
         Hintergrundthread zum periodischen Ein- und Ausschalten der Ausgänge.
         Ist leider etwas umständlich, aber mit Pulsweitemodulierten Pins können
         nur Frequenzen wie 10 Hz, 20 Hz oder 40 Hz geschaltet werden. Wir wollen
-        aber variabel von 1x/Sekunde bis 5x/Sekunde blinken können.
+        aber variabel von 1x/Sekunde bis 10x/Sekunde blinken können.
         """
         while True:
             if self.intensity < 0.1:
+                # Alles aus
                 self._led1.off()
                 self._led2.off()
                 self._buzzer.off()
             elif self.intensity > 0.9:
-                self._led1.on()
-                self._led2.on()
-                #self._buzzer.on()
+                # Crash oder Alarm: Alles an
+                if self.alarm:
+                    self._led1.on()
+                    self._led2.off()
+                else:
+                    self._led1.off()
+                    self._led2.on()
+
+                if not self.silent:
+                    self._buzzer.on()
+                else:
+                    self._buzzer.off()
             else:
-                frequency = 5 * self.intensity
+                # Normale Messung: Periodisches Blinken/Piepsen
+                frequency = 15 * self.intensity
                 sleep_time_s = 1.0 / frequency
 
-                self._led1.on()
+                self._led1.off()
                 self._led2.on()
-                #self._buzzer.on()
+
+                if not self.silent:
+                    self._buzzer.on()
+                else:
+                    self._buzzer.off()
+
                 time.sleep(sleep_time_s)
 
                 self._led1.off()
@@ -85,11 +103,11 @@ class LedBeeper:
         Reagiert auf folgende Device-Parameter:
 
             * current_distance_m: Aktuell gemessener Abstand in Metern
-            * silent_beep: Keine Tonausgabe bei der Abstandsmessung (Boolean)
+            * silent: Tonausgabe unterdrücken (Boolean)
             * alarm: Vom Backend ausgelöster Alarm (Boolean)
-            * silent_alarm: Keine Tonausgabe bei Alarmmeldung vom Backend (Boolean)
         """
         self.silent = device.parameters.get("silent", False)
+        self.alarm = device.parameters.get("alarm", False)
 
         if device.parameters.get("alarm", False):
             self.intensity = 1
