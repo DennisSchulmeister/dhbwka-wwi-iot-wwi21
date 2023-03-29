@@ -5,6 +5,10 @@ import dataclasses, json, logging, ssl
 
 class MQTTHandler:
     """
+    Verbindung zur Außenwelt über einen MQTT-Broker. Sendet die im Ringpuffer
+    abgelegten Messwerte an das Backend und empfängt im Gegenzug Anweisungen
+    vom Backend wie das Auslösen eines Alarms. In der Literatur wird dies auch
+    "Command and Control" genannt.
     """
 
     def __init__(self, device, config):
@@ -44,7 +48,7 @@ class MQTTHandler:
         if config.get("username", "") or config.get("password", ""):
             logging.info(f"Führe Anmeldung am MQTT-Server durch mit Benutzername {config.get('username', '')}")
             self._mqtt.username_pw_set(username=config["username"], password=config["password"])
-        
+
         self._mqtt.loop_start()
 
     def _on_connect(self, client, userdata, flags, rc):
@@ -74,7 +78,7 @@ class MQTTHandler:
             self._mqtt.subscribe(self._config["topic_receive"])
         else:
             self._connected = False
-    
+
     def _on_disconnect(self, client, userdata, rc):
         """
         Verhindert den weiteren Versand von Messwerten, solange keine Verbindung
@@ -83,7 +87,7 @@ class MQTTHandler:
         THREADING: Diese Methode läuft im MQTT-Thread.
         """
         self._connected = False
-    
+
     def _on_message(self, client, userdata, message):
         """
         Wertet ein über MQTT empfangenes Kommando zur Fernsteuerung des Devices aus
