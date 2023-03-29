@@ -20,6 +20,8 @@ class LedBeeper:
         self._intensity = 0
         self._distance_min_m = distance_min_m
         self._distance_max_m = distance_max_m
+
+        self.alarm  = False
         self.silent = False
 
         self._blink_thread = threading.Thread(target=self._blink_thread_main)
