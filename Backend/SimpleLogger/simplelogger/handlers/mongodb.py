@@ -24,10 +24,6 @@ class MongoDBHandler:
         self._database = self._mongo.get_database("sensor_db")
         self._measurements = self._database.get_collection("measurements")
 
-        logging.info(f"self._mongo = {self._mongo}")
-        logging.info(f"self._database = {self._database}")
-        logging.info(f"self._measurements = {self._measurements}")
-    
     def __call__(self, topic, message):
         """
         Verarbeitung einer via MQTT empfangenen Nachricht.
@@ -42,7 +38,7 @@ class MongoDBHandler:
         
         document = {
             "device": topic,
-            "data": message.get("data", {})
+            "data": message.get("data", {}),
         }
 
         logging.info(f"Speichere Messwert: {document}")
