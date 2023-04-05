@@ -34,19 +34,19 @@ class LedBeeper:
         0 = Alarm aus ... 1 = Dauerton; dazwischen wiederholtes Piepsen.
         """
         return self._intensity
-    
+
     @intensity.setter
     def intensity(self, intensity):
         """
         Alarm ertönen lassen bzw. wieder ausschalten durch Überschreiben
-        der Alarmintensität. Die Alarmintensität zwschankt je nach Wert
+        der Alarmintensität. Die Alarmintensität schwankt je nach Wert
         von 2 bis 10 Tönen je Sekunde bzw. danach einem Dauerton.
         """
         if intensity < 0:
             intensity = 0
         elif intensity > 1:
             intensity = 1
-        
+
         self._intensity = intensity
         self.silent = False
         self.alarm = False
@@ -97,7 +97,7 @@ class LedBeeper:
                 self._buzzer.off()
 
                 time.sleep(sleep_time_s)
-        
+
     def __call__(self, device):
         """
         Vom Device mehrmals je Sekunde aufgerufene Funktion, um mit den Sensoren
