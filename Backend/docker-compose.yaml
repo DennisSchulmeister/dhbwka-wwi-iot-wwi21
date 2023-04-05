@@ -3,6 +3,10 @@
 #===============================================================================
 version: "3.9"
 
+volumes:
+    dbdata:
+    dbconfig:
+
 services:
     # MongoDB-Datenbank
     mongodb:
@@ -48,6 +52,6 @@ services:
             - prod
         build: ./SimpleLogger
         environment:
-            MONGO_DB_CONNECTION: "mongodb://mongodb:27017/sensor_db"
+            MONGO_DB_CONNECTION: mongodb://dbuser:dbpass@mongodb:27017/
         depends_on:
             - mongodb
