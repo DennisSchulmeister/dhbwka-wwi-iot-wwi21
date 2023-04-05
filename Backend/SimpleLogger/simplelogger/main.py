@@ -1,4 +1,7 @@
 import configparser, logging, os, time
+from simplelogger.mqtt import MQTT
+from simplelogger.handlers.alarm import AlarmHandler
+from simplelogger.handlers.mongodb import MongoDBHandler
 
 def main():
     """
@@ -20,3 +23,11 @@ def main():
     configfile = os.path.join(os.path.dirname(__file__), "..", "config.ini")
     config = configparser.ConfigParser(interpolation=None)
     config.read(configfile)
+
+    # MQTT Handling konfigurieren
+    mqtt = MQTT(config["mqtt"])
+
+    mqtt.add_handler(AlarmHandler(mqtt))
+    mqtt.add_handler(MongoDBHandler(config["mongodb"]))
+
+    mqtt.loop_forever()

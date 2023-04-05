@@ -1,4 +1,4 @@
-import time
+import time, traceback
 
 class Device:
     """
@@ -48,4 +48,9 @@ class Device:
 
             # Logik der Sensoren und Aktoren ausführen
             for sensor_actor in self._sensors_actors:
-                sensor_actor(self)
+                try:
+                    sensor_actor(self)
+                except KeyboardInterrupt:
+                    return
+                except:
+                    traceback.print_exc()

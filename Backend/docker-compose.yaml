@@ -13,9 +13,10 @@ services:
         image: mongo
         restart: always
         environment:
-            MONGO_INITDB_DATABASE: sensor_db
             MONGO_INITDB_ROOT_USERNAME: dbuser
             MONGO_INITDB_ROOT_PASSWORD: dbpass
+        ports:
+            - 27017:27017
         volumes:
             - dbdata:/data/db
             - dbconfig:/data/configdb
