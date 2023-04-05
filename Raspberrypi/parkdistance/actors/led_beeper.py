@@ -48,8 +48,6 @@ class LedBeeper:
             intensity = 1
 
         self._intensity = intensity
-        self.silent = False
-        self.alarm = False
 
     def _blink_thread_main(self):
         """
@@ -111,7 +109,7 @@ class LedBeeper:
         self.silent = device.parameters.get("silent", False)
         self.alarm = device.parameters.get("alarm", False)
 
-        if device.parameters.get("alarm", False):
+        if self.alarm:
             self.intensity = 1
         else:
             distance_m = device.parameters.get("current_distance_m", 9999)

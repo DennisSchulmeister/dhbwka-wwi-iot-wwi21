@@ -101,9 +101,13 @@ class MQTTHandler:
         command = payload.get("command", "").upper()
 
         if command == "ALARM_ON":
+            logging.warning("Alarm, alarm, es brennt ...")
+            
             self._device.parameters["alarm"] = True
             self._device.parameters["silent"] = False
         elif command == "ALARM_OFF":
+            logging.warning("Backend beendet den Alarm")
+
             self._device.parameters["alarm"] = False
             self._device.parameters["silent"] = False
 
